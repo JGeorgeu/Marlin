@@ -22,7 +22,7 @@
 #pragma once
 
 /**
- * HAL for Teensy 3.2 (MK20DX256)
+ * Description: HAL for Teensy 3.5 and Teensy 3.6
  */
 
 #define CPU_32_BIT
@@ -44,9 +44,8 @@
 //#undef MOTHERBOARD
 //#define MOTHERBOARD BOARD_TEENSY31_32
 
-#define IS_32BIT_TEENSY 1
-#define IS_TEENSY_31_32 1
-#ifndef IS_TEENSY31
+#ifdef __MK20DX256__
+  #define IS_32BIT_TEENSY 1
   #define IS_TEENSY32 1
 #endif
 

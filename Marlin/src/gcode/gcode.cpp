@@ -260,8 +260,12 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
   switch (parser.command_letter) {
     case 'G': switch (parser.codenum) {
 
-      case 0: case 1:                                             // G0: Fast Move, G1: Linear Move
-        G0_G1(TERN_(HAS_FAST_MOVES, parser.codenum == 0)); break;
+      case 0: case 1: G0_G1(                                      // G0: Fast Move, G1: Linear Move
+                        #if IS_SCARA || defined(G0_FEEDRATE)
+                          parser.codenum == 0
+                        #endif
+                      );
+                      break;
 
       #if ENABLED(ARC_SUPPORT) && DISABLED(SCARA)
         case 2: case 3: G2_G3(parser.codenum == 2); break;        // G2: CW ARC, G3: CCW ARC
@@ -311,9 +315,13 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
 
       #if HAS_LEVELING
         case 29:                                                  // G29: Bed leveling calibration
-          TERN(G29_RETRY_AND_RECOVER, G29_with_retry, G29)();
+          #if ENABLED(G29_RETRY_AND_RECOVER)
+            G29_with_retry();
+          #else
+            G29();
+          #endif
           break;
-      #endif
+      #endif // HAS_LEVELING
 
       #if HAS_BED_PROBE
         case 30: G30(); break;                                    // G30: Single Z probe
